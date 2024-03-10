@@ -1,10 +1,10 @@
-pub mod albums;
-pub mod browse;
+mod albums;
+mod browse;
 pub mod context_menu;
-pub mod dropdown;
-pub mod kallax;
-pub mod modal;
-pub mod now_playing;
+mod dropdown;
+mod kallax;
+mod modal;
+mod now_playing;
 pub mod tracks;
 
 pub use albums::Albums;
