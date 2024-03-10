@@ -36,37 +36,30 @@ impl Render for Dropdown {
             },
         );
 
-        let element = div()
-            .child(
-                div()
-                    .id("dropdown")
-                    .rounded(px(1.))
-                    .py_1()
-                    .px_3()
-                    .bg(rgb(theme::colours::TOUCH))
-                    .hover(|style| style.bg(rgb(theme::colours::HUMAN)))
-                    .child(label)
-                    .on_click(cx.listener(|this, _event, cx| {
-                        this.is_open = !this.is_open;
-                        cx.notify();
-                    }))
-            );
+        let element = div().child(
+            div()
+                .id("dropdown")
+                .rounded(px(1.))
+                .py_1()
+                .px_3()
+                .bg(rgb(theme::colours::TOUCH))
+                .hover(|style| style.bg(rgb(theme::colours::HUMAN)))
+                .child(label)
+                .on_click(cx.listener(|this, _event, cx| {
+                    this.is_open = !this.is_open;
+                    cx.notify();
+                })),
+        );
 
         if self.is_open {
-            element.child(
-                div()
-                    .children(self.options.iter().map(|option| {
-                        div()
-                            .id(option.label)
-                            .child(option.label)
-                            .on_click({
-                                let event = Arc::clone(&option.event);
-                                cx.listener(move |_this, _event, cx| {
-                                    cx.emit(Arc::clone(&event));
-                                })
-                            })
-                    }))
-            )
+            element.child(div().children(self.options.iter().map(|option| {
+                div().id(option.label).child(option.label).on_click({
+                    let event = Arc::clone(&option.event);
+                    cx.listener(move |_this, _event, cx| {
+                        cx.emit(Arc::clone(&event));
+                    })
+                })
+            })))
         } else {
             element
         }

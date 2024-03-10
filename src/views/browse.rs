@@ -57,16 +57,24 @@ impl Render for Browse {
             _ => view,
         };
 
-        let view = if self.selected_tab != 0 { view.rounded_tl_sm() } else { view };
-        let view = if self.selected_tab != 3 { view.rounded_tr_sm() } else { view };
+        let view = if self.selected_tab != 0 {
+            view.rounded_tl_sm()
+        } else {
+            view
+        };
+        let view = if self.selected_tab != 3 {
+            view.rounded_tr_sm()
+        } else {
+            view
+        };
 
         div()
             .flex_grow()
             .flex()
             .flex_col()
             .min_h_0()
-            .child(
-                tab_bar(vec![
+            .child(tab_bar(
+                vec![
                     UiAction {
                         label: "Tracks",
                         event: Arc::new(UiEvent::BrowseTabClicked(TRACKS)),
@@ -83,8 +91,10 @@ impl Render for Browse {
                         label: "Playlists",
                         event: Arc::new(UiEvent::BrowseTabClicked(PLAYLISTS)),
                     },
-                ], self.selected_tab, cx)
-            )
+                ],
+                self.selected_tab,
+                cx,
+            ))
             .child(view)
     }
 }

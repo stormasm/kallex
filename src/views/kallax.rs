@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::*;
 
-use self::tracks::TrackView;
+//use self::tracks::TrackView;
 
 pub struct Kallax {
     playback: Model<Playback>,
@@ -26,27 +26,47 @@ impl Kallax {
         let context_menu = cx.new_view(|_cx| ContextMenu::new());
         let modal = cx.new_view(|_cx| Modal::new());
 
-        cx.subscribe(&browse, move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
-            subscriber.handle_ui_event(event, cx);
-        }).detach();
+        cx.subscribe(
+            &browse,
+            move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
+                subscriber.handle_ui_event(event, cx);
+            },
+        )
+        .detach();
 
         let tracks = browse.read(cx).tracks.clone();
-        cx.subscribe(&tracks, move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
-            subscriber.handle_ui_event(event, cx);
-        }).detach();
+        cx.subscribe(
+            &tracks,
+            move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
+                subscriber.handle_ui_event(event, cx);
+            },
+        )
+        .detach();
 
         let albums = browse.read(cx).albums.clone();
-        cx.subscribe(&albums, move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
-            subscriber.handle_ui_event(event, cx);
-        }).detach();
+        cx.subscribe(
+            &albums,
+            move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
+                subscriber.handle_ui_event(event, cx);
+            },
+        )
+        .detach();
 
-        cx.subscribe(&context_menu, move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
-            subscriber.handle_ui_event(event, cx);
-        }).detach();
+        cx.subscribe(
+            &context_menu,
+            move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
+                subscriber.handle_ui_event(event, cx);
+            },
+        )
+        .detach();
 
-        cx.subscribe(&now_playing, move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
-            subscriber.handle_ui_event(event, cx);
-        }).detach();
+        cx.subscribe(
+            &now_playing,
+            move |subscriber, _emitter, event: &Arc<UiEvent>, cx| {
+                subscriber.handle_ui_event(event, cx);
+            },
+        )
+        .detach();
 
         Kallax {
             playback,
@@ -110,10 +130,7 @@ impl Render for Kallax {
             .flex_col()
             .min_h_0()
             .p_1()
-            .child(
-                div()
-                    .min_h(px(30.))
-            )
+            .child(div().min_h(px(30.)))
             .child(
                 div()
                     .flex_grow()
@@ -129,11 +146,14 @@ impl Render for Kallax {
                     .child(self.now_playing.clone())
                     .child(self.context_menu.clone())
                     .child(self.modal.clone())
-                    .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, cx| {
-                        this.context_menu.update(cx, |context_menu, _cx| {
-                            context_menu.position = None;
-                        });
-                    }))
+                    .on_mouse_down(
+                        MouseButton::Left,
+                        cx.listener(move |this, _event, cx| {
+                            this.context_menu.update(cx, |context_menu, _cx| {
+                                context_menu.position = None;
+                            });
+                        }),
+                    ),
             )
     }
 }

@@ -15,7 +15,7 @@ pub fn track(index: usize, track: &Arc<Track>, cx: &mut ViewContext<Tracks>) -> 
         let track = Arc::clone(&track);
         move |_this, _event, cx| cx.emit(UiEvent::play(&track))
     });
-    
+
     let on_right_click = cx.listener({
         let track = Arc::clone(track);
         move |_this, event: &MouseDownEvent, cx: &mut ViewContext<Tracks>| {
@@ -49,37 +49,32 @@ pub fn track(index: usize, track: &Arc<Track>, cx: &mut ViewContext<Tracks>) -> 
                 .w_8()
                 .justify_end()
                 .text_color(rgb(theme::colours::YOUTH))
-                .child((index + 1).to_string())
+                .child((index + 1).to_string()),
         )
-        .child(
-            div().child(track.title.clone())
-        )
+        .child(div().child(track.title.clone()))
         .on_click(on_click)
         .on_mouse_down(MouseButton::Right, on_right_click)
 }
 
 pub fn album(album: &Arc<Album>, cx: &mut ViewContext<Albums>) -> impl IntoElement {
     let element = div()
-        .id(ElementId::Name(format!("{}{}", &album.artist_name, &album.title).into()))
+        .id(ElementId::Name(
+            format!("{}{}", &album.artist_name, &album.title).into(),
+        ))
         .size_64();
 
     let element = if let Some(artwork) = &album.artwork {
-        element.child(
-            img(Arc::clone(artwork))
-                .rounded(px(1.))
-                .size_full()
-        )
+        element.child(img(Arc::clone(artwork)).rounded(px(1.)).size_full())
     } else {
         element
     };
 
-    element
-        .on_click({
-            let album = Arc::clone(album);
-            cx.listener(move |_this, _event, cx| {
-                cx.emit(UiEvent::album(&album));
-            })
+    element.on_click({
+        let album = Arc::clone(album);
+        cx.listener(move |_this, _event, cx| {
+            cx.emit(UiEvent::album(&album));
         })
+    })
 }
 
 pub fn tab_bar<V: EventEmitter<Arc<UiEvent>>>(
@@ -100,19 +95,19 @@ pub fn tab_bar<V: EventEmitter<Arc<UiEvent>>>(
                 .child(item.label);
 
             if index == selected {
-                tab
-                    .bg(rgb(theme::colours::AMSTERDAM))
+                tab.bg(rgb(theme::colours::AMSTERDAM))
                     .text_color(rgb(theme::colours::WINTER))
                     .rounded_t_sm()
             } else {
-                tab
-                    .text_color(rgb(theme::colours::AMSTERDAM))
+                tab.text_color(rgb(theme::colours::AMSTERDAM))
                     .rounded_t_sm()
-                    .hover(|style| style
-                        .rounded_sm()
-                        .bg(rgb(theme::colours::YOUTH))
-                        .text_color(rgb(theme::colours::SHALLOWS))
-                    ).on_click(cx.listener(move |_this, _event, cx| {
+                    .hover(|style| {
+                        style
+                            .rounded_sm()
+                            .bg(rgb(theme::colours::YOUTH))
+                            .text_color(rgb(theme::colours::SHALLOWS))
+                    })
+                    .on_click(cx.listener(move |_this, _event, cx| {
                         cx.emit(Arc::clone(&item.event));
                     }))
             }

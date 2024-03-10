@@ -17,6 +17,7 @@ pub enum TrackView {
     AllTracks,
     // AllArtists,
     // AllAlbums,
+    #[allow(dead_code)]
     ArtistTracks(String),
     // ArtistAlbums(String),
     Album(String, String),
@@ -29,13 +30,20 @@ impl Tracks {
         cx.observe(library, |this, library, cx| {
             this.tracks = get_tracks(cx, &library, &this.view);
             cx.notify();
-        }).detach();
+        })
+        .detach();
 
         let view = TrackView::AllTracks;
         let tracks = get_tracks(cx, library, &view);
-        let sort_dropdown = cx.new_view(|_cx| Dropdown::new("Sort", vec![
-            UiAction { label: "Order", event: Arc::new(UiEvent::PauseClicked) }
-        ]));
+        let sort_dropdown = cx.new_view(|_cx| {
+            Dropdown::new(
+                "Sort",
+                vec![UiAction {
+                    label: "Order",
+                    event: Arc::new(UiEvent::PauseClicked),
+                }],
+            )
+        });
 
         Tracks {
             view,
@@ -56,15 +64,12 @@ impl Render for Tracks {
             .flex()
             .flex_col()
             .gap(px(1.))
-            .child(
-                div()
-                    .flex()
-                    .child(self.sort_dropdown.clone())
-            )
+            .child(div().flex().child(self.sort_dropdown.clone()))
             .children(
-                self.tracks.iter().enumerate().map(|(index, track)|
-                    elements::track(index, track, cx)
-                )
+                self.tracks
+                    .iter()
+                    .enumerate()
+                    .map(|(index, track)| elements::track(index, track, cx)),
             )
     }
 }
@@ -74,9 +79,13 @@ fn get_tracks(cx: &mut Vcx, library: &Model<Library>, view: &TrackView) -> Vec<A
 
     match view {
         TrackView::AllTracks => tracks,
-        TrackView::ArtistTracks(artist) => tracks.into_iter()
-            .filter(|track| track.artist_name == *artist).collect(),
-        TrackView::Album(artist, album) => tracks.into_iter()
-            .filter(|track| track.artist_name == *artist && track.album_title == *album).collect(),
+        TrackView::ArtistTracks(artist) => tracks
+            .into_iter()
+            .filter(|track| track.artist_name == *artist)
+            .collect(),
+        TrackView::Album(artist, album) => tracks
+            .into_iter()
+            .filter(|track| track.artist_name == *artist && track.album_title == *album)
+            .collect(),
     }
 }

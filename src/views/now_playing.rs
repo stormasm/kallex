@@ -18,7 +18,8 @@ impl NowPlaying {
             subscriber.tracks = emitter.read(cx).queue.tracks.clone();
             subscriber.current = emitter.read(cx).queue.current;
             cx.notify();
-        }).detach();
+        })
+        .detach();
 
         NowPlaying {
             tracks: vec![],
@@ -42,25 +43,15 @@ impl NowPlaying {
             .gap_px()
             .rounded_b_sm()
             .bg(rgb(theme::colours::AMSTERDAM))
-            .child(
-                div()
-                    .py_1()
-                    .px_3()
-                    .children([
-                        current_track.map_or("-".to_string(), |track| track.title.clone()),
-                        current_track.map_or("-".to_string(), |track| track.artist_name.clone()),
-                        current_track.map_or("-".to_string(), |track| track.album_title.clone()),
-                    ])
-            );
+            .child(div().py_1().px_3().children([
+                current_track.map_or("-".to_string(), |track| track.title.clone()),
+                current_track.map_or("-".to_string(), |track| track.artist_name.clone()),
+                current_track.map_or("-".to_string(), |track| track.album_title.clone()),
+            ]));
 
         let now_playing = if let Some(track) = current_track {
             if let Some(artwork) = track.artwork.clone() {
-                now_playing.child(
-                    img(artwork)
-                        .flex_none()
-                        .w_80()
-                        .h_80()
-                )
+                now_playing.child(img(artwork).flex_none().w_80().h_80())
             } else {
                 now_playing
             }
@@ -68,57 +59,52 @@ impl NowPlaying {
             now_playing
         };
 
-        now_playing
-            .child(
+        now_playing.child(
+            div().flex().mt_auto().gap_px().children([
                 div()
+                    .id("pause")
+                    .flex_1()
+                    .py_1()
+                    .px_3()
                     .flex()
-                    .mt_auto()
-                    .gap_px()
-                    .children([
-                        div()
-                            .id("pause")
-                            .flex_1()
-                            .py_1()
-                            .px_3()
-                            .flex()
-                            .justify_center()
-                            .bg(rgb(theme::colours::TOUCH))
-                            .hover(|style| style.bg(rgb(theme::colours::SHALLOWS)))
-                            .child("Pause")
-                            .on_click(cx.listener(|_this, _event, cx|
-                                cx.emit(Arc::new(UiEvent::PauseClicked))
-                            )),
-                        div()
-                            .id("resume")
-                            .flex_1()
-                            .py_1()
-                            .px_3()
-                            .flex()
-                            .justify_center()
-                            .bg(rgb(theme::colours::TOUCH))
-                            .hover(|style| style.bg(rgb(theme::colours::SHALLOWS)))
-                            .child("Resume")
-                            .on_click(cx.listener(|_this, _event, cx|
-                                cx.emit(Arc::new(UiEvent::ResumeClicked))
-                            )),
-                        div()
-                            .id("skip")
-                            .flex_1()
-                            .py_1()
-                            .px_3()
-                            .flex()
-                            .justify_center()
-                            .bg(rgb(theme::colours::TOUCH))
-                            .hover(|style| style.bg(rgb(theme::colours::SHALLOWS)))
-                            .child("Skip")
-                            .on_click(cx.listener(|_this, _event, cx|
-                                cx.emit(Arc::new(UiEvent::SkipClicked))
-                            )),
-                    ])
-            )
+                    .justify_center()
+                    .bg(rgb(theme::colours::TOUCH))
+                    .hover(|style| style.bg(rgb(theme::colours::SHALLOWS)))
+                    .child("Pause")
+                    .on_click(
+                        cx.listener(|_this, _event, cx| cx.emit(Arc::new(UiEvent::PauseClicked))),
+                    ),
+                div()
+                    .id("resume")
+                    .flex_1()
+                    .py_1()
+                    .px_3()
+                    .flex()
+                    .justify_center()
+                    .bg(rgb(theme::colours::TOUCH))
+                    .hover(|style| style.bg(rgb(theme::colours::SHALLOWS)))
+                    .child("Resume")
+                    .on_click(
+                        cx.listener(|_this, _event, cx| cx.emit(Arc::new(UiEvent::ResumeClicked))),
+                    ),
+                div()
+                    .id("skip")
+                    .flex_1()
+                    .py_1()
+                    .px_3()
+                    .flex()
+                    .justify_center()
+                    .bg(rgb(theme::colours::TOUCH))
+                    .hover(|style| style.bg(rgb(theme::colours::SHALLOWS)))
+                    .child("Skip")
+                    .on_click(
+                        cx.listener(|_this, _event, cx| cx.emit(Arc::new(UiEvent::SkipClicked))),
+                    ),
+            ]),
+        )
     }
 
-    fn render_queue(&mut self, cx: &mut Vcx) -> impl IntoElement {
+    fn render_queue(&mut self, _cx: &mut Vcx) -> impl IntoElement {
         div()
             .flex_grow()
             .rounded_b_sm()
@@ -151,8 +137,8 @@ impl Render for NowPlaying {
             .flex()
             .flex_col()
             .max_w_80()
-            .child(
-                tab_bar(vec![
+            .child(tab_bar(
+                vec![
                     UiAction {
                         label: "Now playing",
                         event: Arc::new(UiEvent::NowPlayingTabClicked(0)),
@@ -161,8 +147,10 @@ impl Render for NowPlaying {
                         label: "Queue",
                         event: Arc::new(UiEvent::NowPlayingTabClicked(1)),
                     },
-                ], self.selected_tab, cx)
-            );
+                ],
+                self.selected_tab,
+                cx,
+            ));
 
         match self.selected_tab {
             0 => now_playing.child(self.render_now_playing(cx)),

@@ -1,6 +1,6 @@
 use gpui::*;
 
-use crate::*;
+//use crate::*;
 
 pub struct Modal {
     pub is_visible: bool,
@@ -8,9 +8,7 @@ pub struct Modal {
 
 impl Modal {
     pub fn new() -> Modal {
-        Modal {
-            is_visible: false,
-        }
+        Modal { is_visible: false }
     }
 }
 
@@ -31,10 +29,7 @@ impl Render for Modal {
                 this.is_visible = false;
                 cx.notify();
             }))
-            .child(
-                div()
-                    .child("hi")
-            );
+            .child(div().child("hi"));
 
         if self.is_visible {
             modal

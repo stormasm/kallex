@@ -30,10 +30,7 @@ impl Playback {
         let player = Player::new();
         player.watch(cx);
 
-        Playback {
-            queue,
-            player,
-        }
+        Playback { queue, player }
     }
 
     pub fn play(&mut self, track: Arc<Track>, cx: &mut Mcx) {
@@ -95,6 +92,7 @@ impl Queue {
         self.is_playing = true;
     }
 
+    #[allow(dead_code)]
     fn clear(&mut self) {
         self.tracks = Vec::new();
         self.current = None;
@@ -108,13 +106,13 @@ impl Queue {
     }
 
     fn next(&mut self) {
-        self.current = self.current.and_then(|index|
+        self.current = self.current.and_then(|index| {
             if index + 1 < self.tracks.len() {
                 Some(index + 1)
             } else {
                 None
             }
-        );
+        });
 
         self.is_playing = self.current.is_some();
     }
@@ -161,12 +159,14 @@ impl Player {
                 if current_len < prev_len {
                     this.update(&mut cx, |playback, cx| {
                         playback.on_track_end(cx);
-                    }).ok();
+                    })
+                    .ok();
                 }
                 prev_len = current_len;
                 cx.background_executor().timer(POLL_DURATION).await;
             }
-        }).detach();
+        })
+        .detach();
     }
 
     fn get_source(track: &Arc<Track>) -> Decoder<BufReader<File>> {
@@ -181,15 +181,14 @@ impl Player {
 
         queue_len.store(1, SeqCst);
 
-        cx.background_executor().spawn(async move {
-            let source = rodio::source::Done::new(
-                Self::get_source(&track),
-                queue_len,
-            );
-            sink.clear();
-            sink.append(source);
-            sink.play();
-        }).detach();
+        cx.background_executor()
+            .spawn(async move {
+                let source = rodio::source::Done::new(Self::get_source(&track), queue_len);
+                sink.clear();
+                sink.append(source);
+                sink.play();
+            })
+            .detach();
     }
 
     fn add_to_queue(&self, track: &Arc<Track>, cx: &mut AppContext) {
@@ -199,39 +198,46 @@ impl Player {
 
         queue_len.fetch_add(1, SeqCst);
 
-        cx.background_executor().spawn(async move {
-            let source = rodio::source::Done::new(
-                Self::get_source(&track),
-                queue_len,
-            );
-            sink.append(source);
-        }).detach();
+        cx.background_executor()
+            .spawn(async move {
+                let source = rodio::source::Done::new(Self::get_source(&track), queue_len);
+                sink.append(source);
+            })
+            .detach();
     }
 
     fn pause(&self, cx: &mut AppContext) {
         let sink = Arc::clone(&self.sink);
-        cx.background_executor().spawn(async move {
-            sink.pause();
-        }).detach();
+        cx.background_executor()
+            .spawn(async move {
+                sink.pause();
+            })
+            .detach();
     }
 
     fn resume(&self, cx: &mut AppContext) {
         let sink = Arc::clone(&self.sink);
-        cx.background_executor().spawn(async move {
-            sink.play();
-        }).detach();
+        cx.background_executor()
+            .spawn(async move {
+                sink.play();
+            })
+            .detach();
     }
 
     fn skip(&self, cx: &mut AppContext) {
         let sink = Arc::clone(&self.sink);
         let queue_len = Arc::clone(&self.queue_len);
 
-        queue_len.fetch_update(SeqCst, SeqCst, |len|
-            Some(if len > 0 { len - 1 } else { 0 })
-        ).ok();
+        queue_len
+            .fetch_update(SeqCst, SeqCst, |len| {
+                Some(if len > 0 { len - 1 } else { 0 })
+            })
+            .ok();
 
-        cx.background_executor().spawn(async move {
-            sink.skip_one();
-        }).detach();
+        cx.background_executor()
+            .spawn(async move {
+                sink.skip_one();
+            })
+            .detach();
     }
 }

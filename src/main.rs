@@ -37,8 +37,6 @@ fn main() {
             ..Default::default()
         };
 
-        cx.open_window(window_options, |cx| {
-            cx.new_view(Kallax::new)
-        });
+        cx.open_window(window_options, |cx| cx.new_view(Kallax::new));
     });
 }

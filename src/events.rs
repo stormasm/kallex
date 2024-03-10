@@ -18,11 +18,15 @@ pub enum UiEvent {
 }
 impl UiEvent {
     pub fn play(track: &Arc<Track>) -> Arc<UiEvent> {
-        Arc::new(UiEvent::PlayClicked(PlayClickedEvent { track: Arc::clone(track) }))
+        Arc::new(UiEvent::PlayClicked(PlayClickedEvent {
+            track: Arc::clone(track),
+        }))
     }
 
     pub fn queue(track: &Arc<Track>) -> Arc<UiEvent> {
-        Arc::new(UiEvent::QueueClicked(QueueClickedEvent { track: Arc::clone(track) }))
+        Arc::new(UiEvent::QueueClicked(QueueClickedEvent {
+            track: Arc::clone(track),
+        }))
     }
 
     pub fn album(album: &Arc<Album>) -> Arc<UiEvent> {

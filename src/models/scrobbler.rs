@@ -32,7 +32,8 @@ impl Scrobbler {
                     PlaybackEvent::TrackEnded => this.end(cx),
                 }
             }
-        }).detach();
+        })
+        .detach();
 
         let client = Arc::new(Client::new());
 
@@ -103,7 +104,10 @@ impl Scrobbler {
     }
 
     fn scrobble(&mut self, cx: &mut Mcx, track: &Arc<Track>) {
-        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
 
         let mut params = vec![
             ("method", String::from("track.scrobble")),
@@ -135,22 +139,25 @@ impl Scrobbler {
 
         params.push(("format", "json".to_string()));
 
-        let params = params.iter()
+        let params = params
+            .iter()
             .map(|(k, v)| (*k, v.as_str()))
             .collect::<Vec<(&str, &str)>>();
         let body = querystring::stringify(params);
 
         let client = Arc::clone(&self.client);
 
-        cx.background_executor().spawn(async move {
-            client
-                .post(API)
-                .body(body)
-                .header("User-Agent", USER_AGENT)
-                .send()
-                .inspect_err(|err| println!("{err}"))
-                .ok();
-        }).detach();
+        cx.background_executor()
+            .spawn(async move {
+                client
+                    .post(API)
+                    .body(body)
+                    .header("User-Agent", USER_AGENT)
+                    .send()
+                    .inspect_err(|err| println!("{err}"))
+                    .ok();
+            })
+            .detach();
 
         Ok(())
     }
@@ -159,7 +166,8 @@ impl Scrobbler {
 fn sign(mut params: Params) -> Result<Params, env::VarError> {
     params.sort_by(|a, b| a.0.cmp(b.0));
 
-    let param_str = params.iter()
+    let param_str = params
+        .iter()
         .map(|(k, v)| format!("{k}{v}"))
         .collect::<Vec<String>>()
         .join("");

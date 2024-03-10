@@ -3,7 +3,7 @@ use id3::{Tag, TagLike};
 use image::{jpeg::JpegDecoder, DynamicImage};
 use rodio::{Decoder, Source};
 use std::{fs::File, io::BufReader, path::PathBuf, sync::Arc};
-use turbosql::{Turbosql, select};
+use turbosql::{select, Turbosql};
 
 use crate::domain;
 
@@ -67,11 +67,16 @@ impl Track {
 
 pub fn load_all() -> Vec<Arc<domain::Track>> {
     let tracks = select!(Vec<Track>).unwrap();
-    tracks.into_iter().map(|track| Arc::new(track.to_domain())).collect()
+    tracks
+        .into_iter()
+        .map(|track| Arc::new(track.to_domain()))
+        .collect()
 }
 
 fn read_duration(path: &str) -> Option<u32> {
     let file = BufReader::new(File::open(path).ok()?);
     let source = Decoder::new(file).ok()?;
-    source.total_duration().map(|duration| duration.as_secs() as u32)
+    source
+        .total_duration()
+        .map(|duration| duration.as_secs() as u32)
 }
