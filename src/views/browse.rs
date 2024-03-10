@@ -7,7 +7,7 @@ use elements::{tab_bar, UiAction};
 type Vcx<'a> = ViewContext<'a, Browse>;
 
 const TRACKS: usize = 0;
-const ALBUMS: usize = 2;
+const ALBUMS: usize = 1;
 
 pub struct Browse {
     pub selected_tab: usize,
