@@ -42,6 +42,7 @@ fn read_tracks(dir: PathBuf, tracks: &mut Vec<Arc<Track>>) {
             .extension()
             .is_some_and(|extension| SUPPORTED_FILETYPES.contains(&extension.to_str().unwrap()))
         {
+            println!("{}", path.display());
             tracks.push(Arc::new(store::Track::read_and_save(path)))
         }
     }
