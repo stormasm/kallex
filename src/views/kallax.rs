@@ -74,7 +74,7 @@ impl Kallax {
         }
     }
 
-    pub fn handle_ui_event(&mut self, event: &Arc<UiEvent>, cx: &mut ViewContext<Kallax>) {
+    fn handle_ui_event(&mut self, event: &Arc<UiEvent>, cx: &mut ViewContext<Kallax>) {
         match (**event).clone() {
             UiEvent::PlayClicked(event) => self.playback.update(cx, |this, cx| {
                 this.play(Arc::clone(&event.track), cx);
