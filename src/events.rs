@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use EventEmitter;
 
 use crate::*;
 
@@ -33,12 +34,12 @@ impl UiEvent {
         Arc::new(UiEvent::AlbumClicked(Arc::clone(album)))
     }
 }
-impl gpui::EventEmitter<Arc<UiEvent>> for Albums {}
-impl gpui::EventEmitter<Arc<UiEvent>> for Browse {}
-impl gpui::EventEmitter<Arc<UiEvent>> for ContextMenu {}
-impl gpui::EventEmitter<Arc<UiEvent>> for Dropdown {}
-impl gpui::EventEmitter<Arc<UiEvent>> for NowPlaying {}
-impl gpui::EventEmitter<Arc<UiEvent>> for Tracks {}
+impl EventEmitter<Arc<UiEvent>> for Albums {}
+impl EventEmitter<Arc<UiEvent>> for Browse {}
+impl EventEmitter<Arc<UiEvent>> for ContextMenu {}
+impl EventEmitter<Arc<UiEvent>> for Dropdown {}
+impl EventEmitter<Arc<UiEvent>> for NowPlaying {}
+impl EventEmitter<Arc<UiEvent>> for Tracks {}
 
 #[derive(Clone)]
 pub struct PlayClickedEvent {
@@ -68,4 +69,4 @@ impl PlaybackEvent {
         Arc::new(PlaybackEvent::TrackStarted(Arc::clone(track)))
     }
 }
-impl gpui::EventEmitter<Arc<PlaybackEvent>> for Playback {}
+impl EventEmitter<Arc<PlaybackEvent>> for Playback {}
