@@ -9,7 +9,6 @@ pub struct Kallax {
     browse: View<Browse>,
     now_playing: View<NowPlaying>,
     context_menu: View<ContextMenu>,
-    modal: View<Modal>,
 }
 
 impl Kallax {
@@ -20,7 +19,6 @@ impl Kallax {
         let browse = cx.new_view(|cx| Browse::new(cx, &library));
         let now_playing = cx.new_view(|cx| NowPlaying::new(cx, &playback));
         let context_menu = cx.new_view(|_cx| ContextMenu::new());
-        let modal = cx.new_view(|_cx| Modal::new());
 
         cx.subscribe(
             &browse,
@@ -70,7 +68,6 @@ impl Kallax {
             browse,
             now_playing,
             context_menu,
-            modal,
         }
     }
 
@@ -140,7 +137,6 @@ impl Render for Kallax {
                     .child(self.browse.clone())
                     .child(self.now_playing.clone())
                     .child(self.context_menu.clone())
-                    .child(self.modal.clone())
                     .on_mouse_down(
                         MouseButton::Left,
                         cx.listener(move |this, _event, cx| {
