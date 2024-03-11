@@ -127,7 +127,7 @@ impl Queue {
     }
 }
 
-pub struct Player {
+struct Player {
     sink: Arc<Sink>,
     _stream: OutputStream,
     _stream_handle: OutputStreamHandle,
