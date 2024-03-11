@@ -52,15 +52,11 @@ impl Playback {
     pub fn pause(&mut self, cx: &mut Mcx) {
         self.player.pause(cx);
         self.queue.is_playing = false;
-
-        cx.emit(Arc::new(PlaybackEvent::Paused));
     }
 
     pub fn resume(&mut self, cx: &mut Mcx) {
         self.player.resume(cx);
         self.queue.is_playing = true;
-
-        cx.emit(Arc::new(PlaybackEvent::Resumed));
     }
 
     pub fn skip(&mut self, cx: &mut AppContext) {
