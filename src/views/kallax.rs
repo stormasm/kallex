@@ -3,11 +3,8 @@ use std::sync::Arc;
 
 use crate::*;
 
-//use self::tracks::TrackView;
-
 pub struct Kallax {
     playback: Model<Playback>,
-    _scrobbler: Model<Scrobbler>,
     library: Model<Library>,
     browse: View<Browse>,
     now_playing: View<NowPlaying>,
@@ -18,7 +15,6 @@ pub struct Kallax {
 impl Kallax {
     pub fn new(cx: &mut ViewContext<Kallax>) -> Kallax {
         let playback = cx.new_model(Playback::new);
-        let _scrobbler = cx.new_model(|cx| Scrobbler::new(cx, &playback));
         let library = cx.new_model(Library::new);
 
         let browse = cx.new_view(|cx| Browse::new(cx, &library));
@@ -70,7 +66,6 @@ impl Kallax {
 
         Kallax {
             playback,
-            _scrobbler,
             library,
             browse,
             now_playing,
